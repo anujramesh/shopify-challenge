@@ -37,10 +37,10 @@ def index():
         try:
             item_id = int(item_id)
         except:
-            return 'Product ID must be an integer'
+            return 'Item ID must be an integer'
 
         if item_id < 0:
-            return 'Product ID must be non-negative'
+            return 'Item ID must be non-negative'
 
         # check that quantity is a non-negative integer
         try:
@@ -58,7 +58,7 @@ def index():
 
         if cost_per_unit < 0:
             return 'Cost per Unit must be non-negative'
-        
+        # a standard practice for storing monetary values on a database is in terms of cents (base unit)
         cost_per_unit_cents = cost_per_unit * 100
         total_value_cents = cost_per_unit_cents * item_qty
         
@@ -92,7 +92,6 @@ def update(row_id):
 
     if request.method == 'POST':
         item.name = request.form['itemname']
-        # item.quantity = request.form['quantity']
         item_qty = request.form['quantity']
         cost_per_unit = request.form['costperunit']
 
@@ -149,7 +148,6 @@ def export():
 
     items = Inventory.query.order_by(Inventory.date_created).all()
     return render_template('index.html', items=items)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
