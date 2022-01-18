@@ -4,6 +4,7 @@ from datetime import datetime
 import sqlite3
 import csv
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventorydb.db'
 db = SQLAlchemy(app)
