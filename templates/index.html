@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Inventory Tracker</title>
+{% endblock %}
+
+{% block body %}
+<div class="Content">
+    <h1 style="text-align: center">Inventory Tracker</h1>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Product ID</th>
+            <th>Quantity</th>
+            <th>Date Added</th>
+            <th>Last Updated</th>
+            <th>Actions</th>
+        </tr>
+        {% for task in tasks %}
+            <tr>
+                <td>{{ task.content }}</td>
+                <td>{{ task.id }}</td>
+                <td>{{ task.qty }}</td>
+                <td>{{ task.date_created.date() }}</td>
+                <td>{{ task.date_last_updated.date() }}</td>
+                <td>
+                    <a href="/delete/{{task.id}}">Delete</a>
+                    <br>
+                    <a href="/update/{{task.id}}">Update</a>
+                </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <form action="/" method="POST">
+            <td><input type="text" name="content" id="content"></td>
+            <td><input type="text" name="productid" id="productid"></td>
+            <td><input type="text" name="count" id="count"></td>
+            <td></td>
+            <td></td>
+            <td><input type="submit" value="Add Task" id="addtask"></td>
+            </form>
+            
+        </tr>
+    </table>
+    <!---
+        <form action="/" method="POST">
+        <input type="text" name="content" id="content">
+        <input type="submit" value="Add Task" id="addtask">
+    </form>
+    -->
+</div>
+{% endblock %}
