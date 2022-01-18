@@ -1,5 +1,5 @@
 # shopify-challenge
-Shopify Developer Intern Challenge
+Shopify Developer Intern Challenge Summer 2022 - A CRUD application based on the requirements as specified [here](https://docs.google.com/document/d/1z9LZ_kZBUbg-O2MhZVVSqTmvDko5IJWHtuFmIu_Xg1A/edit#).
 
 ## Requirements
 This application requires python3, flask, and flask-sqlalchemy
