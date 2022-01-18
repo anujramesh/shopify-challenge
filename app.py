@@ -4,7 +4,6 @@ from datetime import datetime
 import sqlite3
 import csv
 
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventorydb.db'
 db = SQLAlchemy(app)
@@ -23,6 +22,26 @@ class Inventory(db.Model):
     def __repr__(self):
         return '<InventoryItem %r>' % self.row_id
 
+# return value of int if string can be converted to non-negative int, return string otherwise
+def validate_non_negative_int(str):
+    try:
+        str_as_int = int(str)
+        if str_as_int >= 0:
+            return str_as_int
+        return str
+    except:
+        return str
+
+# return value of float if string can be converted to non-negative float, return string otherwise
+def validate_non_negative_float(str):
+    try:
+        str_as_float = float(str)
+        if str_as_float >= 0:
+            return str_as_float
+        return str
+    except:
+        return str
+
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -31,34 +50,20 @@ def index():
         item_id = request.form['itemid']
         item_qty = request.form['quantity']
         cost_per_unit = request.form['costperunit']
-        
-        if len(item_name) > 100:
-            return 'Item Name cannot exceed 100 characters'
-        # check that item_id is a non-negative integer
-        try:
-            item_id = int(item_id)
-        except:
-            return 'Item ID must be an integer'
 
-        if item_id < 0:
-            return 'Item ID must be non-negative'
+        # check that item_id, quantity, cost_per_unit are valid, non-negative
+        item_id = validate_non_negative_int(item_id)
+        if isinstance(item_id, str):
+            return 'Item ID entered is invalid'
 
-        # check that quantity is a non-negative integer
-        try:
-            item_qty = int(item_qty)
-        except:
-            return 'Quantity must be an integer'
+        item_qty = validate_non_negative_int(item_qty)
+        if isinstance(item_qty, str):
+            return 'Quantity entered is invalid'
 
-        if item_qty < 0:
-            return 'Quantity must be non-negative'
+        cost_per_unit = validate_non_negative_float(cost_per_unit)
+        if isinstance(cost_per_unit, str):
+            return 'Cost per Unit entered is invalid'
 
-        try:
-            cost_per_unit = float(cost_per_unit)
-        except:
-            return 'Cost per Unit value is invalid'
-
-        if cost_per_unit < 0:
-            return 'Cost per Unit must be non-negative'
         # a standard practice for storing monetary values on a database is in terms of cents (base unit)
         cost_per_unit_cents = cost_per_unit * 100
         total_value_cents = cost_per_unit_cents * item_qty
@@ -96,30 +101,22 @@ def update(row_id):
         item_qty = request.form['quantity']
         cost_per_unit = request.form['costperunit']
 
-        # check that quantity is a non-negative integer
-        try:
-            item_qty = int(item_qty)
-        except:
-            return 'Quantity must be an integer'
+        # check that quantity, cost_per_unit are valid, non-negative
+        item_qty = validate_non_negative_int(item_qty)
+        if isinstance(item_qty, str):
+            return 'Quantity entered is invalid'
 
-        if item_qty < 0:
-            return 'Quantity must be non-negative'
-
-        item.quantity = item_qty
-
-        try:
-            cost_per_unit = float(cost_per_unit)
-        except:
-            return 'Cost per Unit value is invalid'
-
-        if cost_per_unit < 0:
-            return 'Cost per Unit must be non-negative'
-
+        cost_per_unit = validate_non_negative_float(cost_per_unit)
+        if isinstance(cost_per_unit, str):
+            return 'Cost per Unit entered is invalid'
+        
+        # express monetary values in terms of cents to store onto database
         cost_per_unit_cents = cost_per_unit * 100
         total_value_cents = cost_per_unit_cents * item_qty
+        # update the values
+        item.quantity = item_qty
         item.cost_per_unit = cost_per_unit_cents
         item.total_value = total_value_cents
-
         item.date_last_updated = datetime.utcnow().replace(microsecond=0)
 
         try:
@@ -139,16 +136,15 @@ def export():
     outcsv = csv.writer(outfile)
 
     cursor = conn.execute('select * from Inventory')
-
     # dump titles of each column
     outcsv.writerow(x[0] for x in cursor.description)
     # dump rows
     outcsv.writerows(cursor.fetchall())
-
     outfile.close()
 
     items = Inventory.query.order_by(Inventory.date_created).all()
     return render_template('index.html', items=items)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
