@@ -7,37 +7,47 @@
 {% block body %}
 <div class="Content">
     <h1 style="text-align: center">Inventory Tracker</h1>
+    <form action="/export" method="POST">
+        <input type="submit" value="Export to CSV" id="export">
+    </form>
+    <br>
     <table>
         <tr>
-            <th>Name</th>
-            <th>Product ID</th>
+            <th>Item Name</th>
+            <th>Item ID</th>
             <th>Quantity</th>
+            <th>Cost per Unit</th>
+            <th>Total Value</th>
             <th>Date Added</th>
             <th>Last Updated</th>
             <th>Actions</th>
         </tr>
-        {% for task in tasks %}
+        {% for item in items %}
             <tr>
-                <td>{{ task.content }}</td>
-                <td>{{ task.id }}</td>
-                <td>{{ task.qty }}</td>
-                <td>{{ task.date_created.date() }}</td>
-                <td>{{ task.date_last_updated.date() }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.item_id }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ "$%.2f"|format(item.cost_per_unit/100) }}</td>
+                <td>{{ "$%.2f"|format(item.total_value/100) }}</td>
+                <td>{{ item.date_created.date() }}</td>
+                <td>{{ item.date_last_updated }}</td>
                 <td>
-                    <a href="/delete/{{task.id}}">Delete</a>
+                    <a href="/delete/{{item.row_id}}">Delete</a>
                     <br>
-                    <a href="/update/{{task.id}}">Update</a>
+                    <a href="/update/{{item.row_id}}">Update</a>
                 </td>
             </tr>
         {% endfor %}
         <tr>
             <form action="/" method="POST">
-            <td><input type="text" name="content" id="content"></td>
-            <td><input type="text" name="productid" id="productid"></td>
-            <td><input type="text" name="count" id="count"></td>
+            <td><input type="text" name="itemname" id="itemname"></td>
+            <td><input type="number" name="itemid" id="itemid"></td>
+            <td><input type="number" name="quantity" id="quantity"></td>
+            <td><input type="text" name="costperunit" id="costperunit"></td>
             <td></td>
             <td></td>
-            <td><input type="submit" value="Add Task" id="addtask"></td>
+            <td></td>
+            <td><input type="submit" value="Add item" id="additem"></td>
             </form>
             
         </tr>
@@ -45,7 +55,7 @@
     <!---
         <form action="/" method="POST">
         <input type="text" name="content" id="content">
-        <input type="submit" value="Add Task" id="addtask">
+        <input type="submit" value="Add item" id="addtask">
     </form>
     -->
 </div>
