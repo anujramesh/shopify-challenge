@@ -26,7 +26,7 @@
             <td><input type="text" name="itemname" id="itemname" value="{{item.name}}"></td>
             <td>{{ item.item_id }}</td>
             <td><input type="number" name="quantity" id="quantity" value="{{item.quantity}}"></td>
-            <td><input type="text" name="costperunit" id="costperunit" value="{{item.cost_per_unit/100}}"></td>
+            <td>$ <input type="text" name="costperunit" id="costperunit" value="{{item.cost_per_unit/100}}"></td>
             <td>{{ "$%.2f"|format(item.total_value/100) }}</td>
             <td>{{ item.date_created.date() }}</td>
             <td>{{ item.date_last_updated }}</td>
